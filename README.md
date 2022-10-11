@@ -5,7 +5,7 @@ simple tutorial for t-SNE
 
 ## 목차
 1. [Dimensionality Reduction Overview](#dimensionality-reduction-overview)
-2. [Concepts of t-Stochastic Neighborhood Embedding(t-SNE)](#concepts-of-t-stochastic-neighborhood-embeddingt-sne)
+2. [Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)](#concepts-of-t-distributed-stochastic-neighbor-embeddingt-sne)
 
 ---
 
@@ -36,11 +36,11 @@ dimensionality reduction(차원축소)은 데이터가 가지고 있는 객체�
 
 표 데이터 뿐만 아니라 이미지 데이터에서도 이러한 dimensionality를 정의할 수 있습니다. MNIST로 예를 들어봅시다. 아래 사진은 MNIST의 이미지 일부를 표시한 결과입니다. MNIST의 숫자 이미지 28 by 28, 즉 784개의 픽셀로 이루어져있습니다. MNIST의 이미지 하나를 데이터 객체라고 생각하면 각 객체는 784개의 요소로 이뤄져있으므로 MNIST의 dimensionality는 784입니다.
 
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/194852600-9cfb7772-5f22-41cd-8ea8-de48f9e440aa.png" height="500px" width="500px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/194852600-9cfb7772-5f22-41cd-8ea8-de48f9e440aa.png" height="350px" width="350px"></p>
 
 그런데, dimensionality reduction이 필요한 이유는 무엇일까요? 앞서 설명한 바에 따르면 dimensionality는 데이터 객체를 설명하기 위한 요소의 수입니다. 그렇다면 자연스럽게 생각할 수 있는것은(*사실 제가 처음 배울때 생각했던 겁니다*) dimensionality reduction을 하면 오히려 안 좋은 것 아닌가 하는 의문입니다. 데이터 객체를 설명하는 요소를 줄이는 일이니까요. 이에 대해 결론부터 말하자면 ***그렇지 않다!*** 는 겁니다. 이에는 크게 두 가지 이유가 있는데, 첫째는 dataset dimension이 감소해도 설명력이 유지될 수 있기 때문이고, 둘째는 dataset의 dimension이 클수록 여러 문제가 발생할 수 있다는 것입니다. 이에 대해 조금 더 자세히 설명하겠습니다.
 1. 데이터셋의 intrinsic dimension은 일반적으로 데이터셋이 원래 가지고 있는 dimension에 비해 작습니다. Intrinsic dimension을 쉽게 말하자면, 데이터셋이 전달하고자 하는 정보를 설명하기 위해 꼭 필요한 dimension 요소의 수입니다. 예를 들어, MNIST의 경우 데이터셋이 전달하고자 하는 정보는 *'손으로 쓴 숫자 0~9'* 입니다. 이 정보를 전달하기 위해 784개의 픽셀이 다 필요할까요? 그렇지 않을겁니다. 예를 들어 아래 사진처럼 MNIST의 숫자 1 이미지를 적당히 잘라내도 여전히 1임을 알아 볼 수 있습니다. 물론 실제로 이런 식으로 dimensionality reduction을 하지는 않지만요. 이처럼, 대체로 데이터셋의 dimension을 줄여도 원하는 task에 대한 설명력을 유지할 수 있습니다. 이것이 dimensionality reduction을 하는 첫번째 이유입니다.
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/194868403-9919c2fe-445f-4904-a03e-841e153936f0.png" height="300px" width="500px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/194868403-9919c2fe-445f-4904-a03e-841e153936f0.png" height="250px" width="450px"></p>
 
 2. dataset의 dimension이 증가하면 일반적으로 여러 문제가 발생합니다. 사실, 첫번째 이유는 사실 dimensionality reduction을 해"도" 좋은 이유지 해"야할"이유는 아닙니다. 여기에 두 번째 이유가 함께 작용하기 때문에 dimensionality reduction이 필요한 것입니다. 이론적으로는 만약 데이터셋의 모든 관측이 정확하게 이뤄져서 올바르게 데이터셋에 기록되었다면 dimension이 늘어나더라도 이를 통해 모델링했을 때의 결과가 나빠질 일은 없습니다. 하지만 현실세계에서는 데이터셋에는 여러 부정확한 관측치가 기록되기도 하고 기록과정에서의 오류도 존재하는 편입니다. 때문에 dimension이 늘어나는 경우 이를 통해 모델링하는 경우 그 성능이 저하되는 경우가 발생합니다. 이에 더해, data의 sparsity 문제, 계산량 증가 또한 dimensionality의 증가에 따른 문제라고 볼 수 있습니다.
 
@@ -61,10 +61,16 @@ dimensionality reduction(차원축소)은 데이터가 가지고 있는 객체�
 
 ---
 
-## Concepts of t-Stochastic-Neighborhood-Embedding(t-SNE)
+## Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)
 t-SNE의 방법론적 핵심을 요약하면, 데이터셋의 객체들이 그들의 이웃과의 거리 정보를 거리에 따라 감소하는 확률로써 반영하여(즉, 거리가 가까울수록 서로간의 확률값이 높아짐.) 각 객체사이의 확률값이 저차원에서도 보존되도록 차원을 축소시키는 것입니다. 쓰면서도 머리가 어지럽네요. 이게 무슨 뜻인지 차근차근 알아봅시다.
 
-### Stochastic Neighborhood Embedding(SNE)
-t-SNE는 SNE로부터 출발한 방법입니다. SNE는 LLE(locally linear embedding) 방법론에서는 이웃과의 거리를 deterministic하게 결정하는 것과는 다르게 stochastic하게 정의합니다. 원래 데이터셋의 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $p_{j|i}$라 하고, 축소된 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $q_{j|i}$라 하면 아래와 같습니다.
+### Stochastic Neighbor Embedding(SNE)
+t-SNE는 SNE로부터 출발한 방법입니다. SNE는 두 데이터 이웃 데이터 객체간의 거리를 stochastic하게 정의하는 것이 핵심적인 아이디어입니다. SNE에서는 이 아이디어를 각 원래 데이터셋의 차원에서 객체 $i$와 $j$의 euclidean distance를 일종의 조건부 확률로 전환하여 이를 두 객체의 유사도로 함으로써 구현하였습니다. SNE에서 $i$ 기준 $j$와의 유사도를 $p_{j|i}$라 하고, 축소된 차원에의 $i$ 기준 $j$의 유사도를 $q_{j|i}$라 하면 아래와 같습니다.
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195049568-a448467a-2bb3-4f5a-8d00-e8ae42a7cb30.png" height="200px" width="600px"></p>
 
+SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 유사하게 하게 하는 $y_i$를 찾아내어 축소된 공간에서도 원래 공간에서의 거리가 가까울수록 높게 보존하는 방식의 embedding을 구현합니다. 여기까지 이해가 되셨다면, 자연스럽게 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 비슷하게 하는 $y_i$를 찾아내기 위해 두 확률분포의 차이를 어떤 식으로 측정할 것인지 궁금하실겁니다. SNE(t-SNE에서도)에서는 이를 두 확률분포의 KL(Kullback-Leiber) divergence를 cost function으로 하는 최적화문제를 해결하는 방식으로 접근하였습니다. 원래 공간에서의 객체 $x_i$의 확률분포를 $P_{i}$라 하고 객체 $y_i$의 확률분포를 $Q_{i}$라 하면 cost function은 아래와 같습니다. 
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195084273-55a1a174-12f7-4eff-80c9-bc9fc90a37b6.png" height="200px" width="600px"></p>
+
+
+
+우선 $p_{j|i}$에서 $\sigma_i$가 어디서 왔는지는 조금 이후에 살펴보기로 합시다. 우선
