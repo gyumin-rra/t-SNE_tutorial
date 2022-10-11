@@ -74,4 +74,4 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 위 cost function을 계산하는데 필요한 요소를 자세히 봅시다. 결국 $p_{j|i}$와 $q_{j|i}$를 계산하면 되고, 각각을 계산하기 위해서는 $x_i$와 $y_i$, 그리고 자세히 보시면  $p_{j|i}$에 있는 $\sigma_i$를 알아야 합니다. $x_i$는 데이터셋에서 주어지는 값입니다. 그리고 $y_i$는 우리가 최적화 문제를 통해 찾아야 하는 값이죠. 그러면 $\sigma_i$가 대체 뭘까요? 이를 알기 위해서는 우선 perplexity부터 알아야 합니다.
 > perplexity
 > 
-> perplexity는 $2^{entropy}$ 이며, 어떤 확률분포를 $p(x)$라 할 때 $p(x)$의 entropy는 $\sum_x -p(x)log_2(p(x))$입니다. 식을 보시면 아시겠지만, 어떤 확률분포가 고르게 분포하면 분포할수록 해당 확률분포의 entropy가 높아집니다. 이를 현재 SNE에 적용해보면, 데이터 객체 $x_i$에 대한 확률분포 $P_i$의 entropy는 $\sum_j -p_{j|i}log(p_{j|i})$ 
+> perplexity는 $2^{entropy}$ 이며, 어떤 확률분포를 $p(x)$라 할 때 $p(x)$의 entropy는 $\sum_x -p(x)log_2(p(x))$입니다. 식을 보시면 아시겠지만, 어떤 확률분포가 고르게 분포하면 분포할수록 해당 확률분포의 entropy가 높아집니다. 이를 현재 SNE에 적용해보면, 데이터 객체 $x_i$에 대한 확률분포 $P_i$의 entropy는 $\sum_j -p_{j|i}log_2(p_{j|i})$ 
