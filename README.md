@@ -69,7 +69,7 @@ t-SNE는 SNE로부터 출발한 방법입니다. SNE는 두 데이터 이웃 데
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195049568-a448467a-2bb3-4f5a-8d00-e8ae42a7cb30.png" height="200px" width="600px"></p>
 
 SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 유사하게 하게 하는 $y_i$를 찾아내어 축소된 공간에서도 원래 공간에서의 거리가 가까울수록 높게 보존하는 방식의 embedding을 구현합니다. 여기까지 이해가 되셨다면, 자연스럽게 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 비슷하게 하는 $y_i$를 찾아내기 위해 두 확률분포의 차이를 어떤 식으로 측정할 것인지 궁금하실겁니다. SNE(t-SNE에서도)에서는 이를 두 확률분포의 KL(Kullback-Leiber) divergence를 cost function으로 하는 최적화문제를 해결하는 방식으로 접근하였습니다. 원래 공간에서의 객체 $x_i$의 확률분포를 $P_{i}$라 하고 객체 $y_i$의 확률분포를 $Q_{i}$라 하면 cost function은 아래와 같습니다. 
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195084273-55a1a174-12f7-4eff-80c9-bc9fc90a37b6.png" height="200px" width="600px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195084273-55a1a174-12f7-4eff-80c9-bc9fc90a37b6.png" height="100px" width="600px"></p>
 
 
 
