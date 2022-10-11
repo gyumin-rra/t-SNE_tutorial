@@ -66,5 +66,5 @@ t-SNE의 방법론적 핵심을 요약하면, 데이터셋의 객체들이 그�
 
 ### Stochastic Neighborhood Embedding(SNE)
 t-SNE는 SNE로부터 출발한 방법입니다. SNE는 LLE(locally linear embedding) 방법론에서는 이웃과의 거리를 deterministic하게 결정하는 것과는 다르게 stochastic하게 정의합니다. 원래 데이터셋의 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $p_{j|i}$라 하고, 축소된 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $q_{j|i}$라 하면 아래와 같습니다.
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195049568-a448467a-2bb3-4f5a-8d00-e8ae42a7cb30.png"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195049568-a448467a-2bb3-4f5a-8d00-e8ae42a7cb30.png" height="200px" width="600px"></p>
 
