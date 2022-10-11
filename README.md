@@ -59,4 +59,12 @@ dimensionality reduction(차원축소)은 데이터가 가지고 있는 객체�
 
 물론 이외에도 KPCA, LDA 등등 다양한 차원축소 기법이 존재합니다. 일단 이 repository에서는 t-SNE 방법론을 주로 살펴보고자 합니다. 우선 t-SNE의 개념부터 살펴보겠습니다.
 
-## Concepts of t-Stochastic-Neighborhood-Embedding(t-sne)
+---
+
+## Concepts of t-Stochastic-Neighborhood-Embedding(t-SNE)
+t-SNE의 방법론적 핵심을 요약하면, 데이터셋의 객체들이 그들의 이웃과의 거리 정보를 거리에 따라 감소하는 확률로써 반영하여(즉, 거리가 가까울수록 서로간의 확률값이 높아짐.) 각 객체사이의 확률값이 저차원에서도 보존되도록 차원을 축소시키는 것입니다. 쓰면서도 머리가 어지럽네요. 이게 무슨 뜻인지 차근차근 알아봅시다.
+
+### Stochastic Neighborhood Embedding(SNE)
+t-SNE는 SNE로부터 출발한 방법입니다. SNE는 LLE(locally linear embedding) 방법론에서는 이웃과의 거리를 deterministic하게 결정하는 것과는 다르게 stochastic하게 정의합니다. 원래 데이터셋의 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $p_{j|i}$라 하고, 축소된 차원에서 객체 $i$가 $j$를 이웃으로 택할 확률을 $q_{j|i}$라 하면 아래와 같습니다.
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195049568-a448467a-2bb3-4f5a-8d00-e8ae42a7cb30.png"></p>
+
