@@ -74,4 +74,7 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 위 cost function을 계산하는데 필요한 요소를 자세히 봅시다. 결국 $p_{j|i}$와 $q_{j|i}$를 계산하면 되고, 각각을 계산하기 위해서는 $x_i$와 $y_i$, 그리고 자세히 보시면  $p_{j|i}$에 있는 $\sigma_i$를 알아야 합니다. $x_i$는 데이터셋에서 주어지는 값입니다. 그리고 $y_i$는 우리가 최적화 문제를 통해 찾아야 하는 값이죠. 그러면 $\sigma_i$가 대체 뭘까요? 이를 알기 위해서는 우선 perplexity부터 알아야 합니다.
 > perplexity
 > 
-> perplexity는 $2^{entropy}$ 이며, 어떤 확률분포를 $p(x)$라 할 때 $p(x)$의 entropy는 $\sum_x -p(x)log_2(p(x))$입니다. 식을 보시면 아시겠지만, 어떤 확률분포가 고르게 분포하면 분포할수록 해당 확률분포의 entropy가 높아집니다. 이를 SNE에 적용해보면, 데이터 객체 $x_i$에 대한 확률분포 $P_i$의 entropy는 $\sum_j -p_{j|i}log_2(p_{j|i})$라 할 수 있고, 결국 preplexity는 $2^{\sum_j -p_{j|i}log_2(p_{j|i})}$
+> perplexity는 $2^{entropy}$ 이며, 어떤 확률분포를 $p(x)$라 할 때 $p(x)$의 entropy는 $\sum_x -p(x)log_2(p(x))$입니다. 식을 보시면 아시겠지만, 어떤 확률분포가 고르게 분포하면 분포할수록 해당 확률분포의 entropy가 높아집니다. 이를 SNE에 적용해보면, 데이터 객체 $x_i$에 대한 확률분포 $P_i$의 entropy는 $\sum_j -p_{j|i}log_2(p_{j|i})$라 할 수 있고, 결국 perplexity는 $2^{\sum_j -p_{j|i}log_2(p_{j|i})}$가 됩니다. 결과적으로 확률분포의 각 값이 비슷해질수록 높은 entropy를 가지게 되고, entropy가 높아질수록 높은 perplexity를 가지게 됩니다.
+
+이제 원래 SNE에서의 perplexity로 돌아갑시다. SNE에서 perplexity는 정해주는 하이퍼 파라미터입니다. 만약 SNE를 할 때, 데이터 객체 $x_i$로부터 거리가 멀더라도 비슷한 확률로 유사도가 표현되도록 하고 싶다면 높은 perplexity를 정해주면 될 것입니다. 쉽게 말해 데이터 객체 $x_i$의 이웃의 범위가 넓어지는 셈이죠. 만약 perplexity가 낮다면 이웃의 범위가 좁아지는 것이 될테구요. 하지만 SNE의 원 논문을 보면, SNE의 결과는 5~50의 perplexity의 변화에는 robust하게 일정하다고 하니, 이 점을 참고하면 좋을 것 같습니다. 
+어쨌든, 
