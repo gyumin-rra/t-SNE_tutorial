@@ -76,6 +76,6 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 > 
 > perplexity는 $2^{entropy}$ 이며, 어떤 확률분포를 $p(x)$라 할 때 $p(x)$의 entropy는 $\sum_x -p(x)log_2(p(x))$입니다. 식을 보시면 아시겠지만, 어떤 확률분포가 고르게 분포하면 분포할수록 해당 확률분포의 entropy가 높아집니다. 이를 SNE에 적용해보면, 데이터 객체 $x_i$에 대한 확률분포 $P_i$의 entropy는 $\sum_j -p_{j|i}log_2(p_{j|i})$라 할 수 있고, 결국 perplexity는 $2^{\sum_j -p_{j|i}log_2(p_{j|i})}$가 됩니다. 결과적으로 확률분포의 각 값이 비슷해질수록 높은 entropy를 가지게 되고, entropy가 높아질수록 높은 perplexity를 가지게 됩니다.
 
-이제 원래 SNE에서의 perplexity로 돌아갑시다. SNE에서 perplexity는 정해주는 하이퍼 파라미터입니다. 만약 SNE를 할 때, 데이터 객체 $x_i$로부터 거리가 멀더라도 비슷한 확률로 유사도가 표현되도록 하고 싶다면 높은 perplexity를 정해주면 될 것입니다. 쉽게 말해 데이터 객체 $x_i$의 이웃의 범위가 넓어지는 셈이죠. 만약 perplexity가 낮다면 이웃의 범위가 좁아지는 것이 될테구요*(하지만 SNE의 원 논문을 보면, SNE의 결과는 5~50의 perplexity의 변화에는 robust하게 일정하다고 하니, 이 점을 참고하면 좋을 것 같습니다.)*.
+이제 원래 SNE에서의 perplexity로 돌아갑시다. SNE에서 perplexity는 정해주는 하이퍼 파라미터입니다. 만약 SNE를 할 때, 데이터 객체 $x_i$로부터 거리가 멀더라도 비슷한 확률로 유사도가 표현되도록 하고 싶다면 높은 perplexity를 정해주면 될 것입니다. 쉽게 말해 데이터 객체 $x_i$의 이웃의 범위가 넓어지는 셈이죠. 만약 perplexity가 낮다면 이웃의 범위가 좁아지는 것이 될테구요(*하지만 SNE의 원 논문을 보면, SNE의 결과는 5~50의 perplexity의 변화에는 robust하게 일정하다고 합니다)*.
 
 어쨌든, 높은 perplexity를 정해주면 높은 entropy가 결정되고 이는 곧 $P_i$가 고른 것을 의미함을 이해하셨을 것입니다. 이제 $p_{j|i}$ 식을 생각해보면 이 perplexity는 식으로 정리하면 $2^{\sum_j -p_{j|i}log_2(p_{j|i})}$이기 때문에 이를 역산(엄밀히 말해 실제로 역산하지는 않습니다만)
