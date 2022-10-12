@@ -96,8 +96,12 @@ t-SNE의 저자들은 SNE에 두 가지 아이디어를 추가합니다. 첫번�
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195279421-87d362f4-235d-4b70-bf85-ea3a66b31ee5.png" height="200px" width="600px"></p>
 
 논문에서 선택한 것은 오른쪽입니다. 왼쪽의 경우 한번만 계산해도 되기 때문에 계산도 효율적이고, 더 분명한 의미를 가지지만 한가지 문제가 존재합니다. 바로 이상치가 발생할 경우, 해당 이상치는 다른 점들에 비해 모두 멀리 떨어져 있으므로 $p_{ij}$가 작게 되고, 결국 이 이상치의 mapping이 불분명해지게 됩니다. 그래서 오른쪽과 같이 정의하게 되면 어떤 경우에도 $\sum_j p_{ij} > \frac{1}{2n}$ 으로 만들어주기 때문에 앞서 언급했던 이상치의 문제를 어느정도 해결할 수 있습니다. 논문의 저자들은 이 symmetric SNE가 원래 SNE에 비해 동일하거나 그 이상의 성능을 보임을 확인했다고 합니다. 
-#### t-distribution
+#### Employment of t-distribution
 symmetric SNE에서의 아이디어를 통해 $p_{ij}$를 정의한 후, 저자들은 crowding problem을 해결하기 위한 목적으로 $q_{ij}$를 아래와 같이 정의합니다. 
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195288693-1c158327-4c13-4f7a-99db-32c60934dbb9.png" height="100px" width="300px"></p>
 
-우선 저자들에 따르면, symmetric SNE에서는 
+symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집니다. 그런데, 정규분포에서는 평균값에서 멀어질수록, 즉 여기서는 객체 i로부터의 거리가 멀어질수록 그 확률함수의 값이 급격하게 낮아집니다. 이러한 경우 실제로는 적당한(moderate) 거리에 있는 객체들이 들어갈 영역이 작은 문제가 생기는데, 이를 crowding problem이라 합니다. 때문에 저자들은 $q_{ij}$를 정규분포가 아닌 자유도가 1인 t-분포(코시 분포와 동일합니다)를 사용하여 정의합니다. t-분포는 정규분포와 다르게 앞서 말한 것에 비하여 적당한 거리의 객체들이 저차원 공간에 mapping될 영역을 만들어줄 뿐만아니라(자유도가 1이므로), 나아가 정규분포에 비하여 계산도 간편하다고 합니다. 
+
+
+
+
