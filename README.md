@@ -120,13 +120,8 @@ symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집
 ## t-SNE Implementation
 t-SNE 알고리즘의 순서부터 생각해봅시다. 하이퍼 파라미터의 설정 이후에는 1) $p_{j|i}$를 계산(전체 객체 n개에 대해), 2) $p_{ij}$ 계산, 3) 초기해 설정, 4) gradient 계산, 5) solution update, 6) 이후 t번 4, 5) 반복의 순서로 이뤄져야 합니다. 하지만 실제로 이를 구현하기 위해서는 1)을 조금 더 깊게 파고 들어야합니다. 앞서 살펴본 t-SNE의 개념을 되짚어 보면, $p_{j|i}$를 계산하기 위해서는 각 객체 사이의 유클리드 거리 계산 및 perplexity에 따른 각 데이터 객체 별 $\sigma_i$를 도출하는 과정이 선행되어야 함을 알 수 있습니다. $\sigma_i$ 도출을 위해 흔히 사용하는 알고리즘은 binary search 입니다. 이진탐색의 개념을 자세히 짚고 넘어가지는 못하지만, 최대한 압축하여 설명하자면 여기서의 이진탐색은 0부터 최대 $\sigma_i$ 중간값의 $\sigma_i$를 구해 대입해본 후 원하는 perplexity 보다 낮으면 0과 현재 $\sigma_i$ 사이의 값을 넣어보고 높으면 현재 $\sigma_i$와 최대 $\sigma_i$ 사이의 값을 넣어보는 것을 반복하며 perplexity를 만족하는 $\sigma_i$를 찾는 식으로 찾아내는 것을 말합니다. 
 
-위 과정을 생각했을 때, 일종의 함수선언이 필요한 부분은 다음과 같습니다.
+위 과정을 생각했을 때, 구현해주어야 할 함수는 다음과 같이 정할 수 있습니다.
 1. euclidean distance matrix 반환
-2. entropy 계산
-3. binary search
-4. $p_{ij}$ matrix 반환
-5. $q_{ij}$ matrix 반환
-6. optimization
 
 하나하나 살펴봅시다. 
 
