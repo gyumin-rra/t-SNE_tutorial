@@ -105,6 +105,8 @@ symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집
 
 #### t-SNE
 결론적으로 위 두가지 아이디어, symmetric 한 $p_{ij}$의 정의와 t-분포를 이용한 $q_{ij}$의 정의를 기존 SNE에 도입한 SNE를 t-SNE라고 합니다. 따라서 t-SNE에서의 원래 공간에서의 두 객체간의 유사도 $p_{ij}$, 차원 축소 결과 두 객체간의 유사도 $q_{ij}$, 이 때의 cost function, 그리고 gradient를 정리하면 아래와 같습니다. 
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195350179-54189798-b73d-4dc8-a013-4f53c49fc7ec.png" height="300px" width="1000px"></p>
+
 
 
 
