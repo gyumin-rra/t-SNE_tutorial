@@ -6,6 +6,7 @@ simple tutorial for t-SNE
 ## 목차
 1. [Dimensionality Reduction Overview](#dimensionality-reduction-overview)
 2. [Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)](#concepts-of-t-distributed-stochastic-neighbor-embeddingt-sne)
+3. [t-SNE Implementation](#t-sne-implementation)
 
 ---
 
@@ -107,8 +108,27 @@ symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집
 결론적으로 위 두가지 아이디어, symmetric 한 $p_{ij}$의 정의와 t-분포를 이용한 $q_{ij}$의 정의를 기존 SNE에 도입한 SNE를 t-SNE라고 합니다. 따라서 t-SNE에서의 원래 공간에서의 두 객체간의 유사도 $p_{ij}$, 차원 축소 결과 두 객체간의 유사도 $q_{ij}$, 이 때의 cost function, 그리고 gradient를 정리하면 아래와 같습니다. 
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195350179-54189798-b73d-4dc8-a013-4f53c49fc7ec.png" height="300px" width="1000px"></p>
 
-그리고 이에 따라 t-SNE의 
+그리고 이에 따라 t-SNE 논문에서 제시된 t-SNE 수도코드는 아래와 같습니다.
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195351628-82f1b0c2-7628-43a5-aa8b-9814efbaa4c4.png"></p>
+
+정리하면, t-SNE 알고리즘의 hyper-parameter는 perplexity, iteration의 수, learning rate, momentum이며, 알고리즘은 hyper-parameter 설정 이후 $p_{j|i}$ 계산, 초기해 initialize (generated from gaussian), gradient descent의 순서로 진행됩니다. 
+
+이제, 위 알고리즘을 실제로 구현해 보겠습니다.
+
+---
+
+## t-SNE Implementation
+t-SNE 알고리즘의 순서부터 생각해봅시다. 하이퍼 파라미터의 설정 이후에는 1) $p_{j|i}$를 계산(전체 객체 n개에 대해), 2) $p_{ij}$ 계산, 3) 초기해 설정, 4) gradient 계산, 5) solution update, 6) 이후 t번 4, 5) 반복의 순서로 이뤄져야 합니다. 하지만 실제로 이를 구현하기 위해서는 1)을 조금 더 깊게 파고 들어야합니다. 앞서 살펴본 t-SNE의 개념을 되짚어 보면, $p_{j|i}$를 계산하기 위해서는 각 객체 사이의 유클리드 거리 계산 및 perplexity에 따른 각 데이터 객체 별 $\sigma_i$를 도출하는 과정이 선행되어야 함을 알 수 있습니다. $\sigma_i$ 도출을 위해 흔히 사용하는 알고리즘은 binary search 입니다. 이진탐색의 개념을 자세히 짚고 넘어가지는 못하지만, 최대한 압축하여 설명하자면 여기서의 이진탐색은 0부터 최대 $\sigma_i$ 중간값의 $\sigma_i$를 구해 대입해본 후 원하는 perplexity 보다 낮으면 0과 현재 $\sigma_i$ 사이의 값을 넣어보고 높으면 현재 $\sigma_i$와 최대 $\sigma_i$ 사이의 값을 넣어보는 것을 반복하며 perplexity를 만족하는 $\sigma_i$를 찾는 식으로 찾아내는 것을 말합니다. 
+
+위 과정을 생각했을 때, 일종의 함수선언이 필요한 부분은 다음과 같습니다.
+1. euclidean distance matrix 반환
+2. entropy 계산
+3. binary search
+4. $p_{ij}$ matrix 반환
+5. $q_{ij}$ matrix 반환
+6. optimization
+
+하나하나 살펴봅시다. 
 
 
 
