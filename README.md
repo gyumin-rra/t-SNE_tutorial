@@ -81,7 +81,7 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 어쨌든, 높은 perplexity를 정해주면 높은 entropy가 결정되고 이는 곧 $P_i$가 고른 것, 다시 말해 $x_i$로부터 거리가 먼 객체와 작은 객체간의 확률 차이가 작음을 의미함을 이해하셨을 것입니다. 이제 $p_{j|i}$에 들어간 $\sigma_i$에 대해서 생각해봅시다. 결국 perplexity가 정해지면 entropy가 정해지고, entropy가 정해지면 $p_{j|i}$가 정해져야 되기 때문에 결과적으로 $x_i$마다 $\sigma_i$가 정해집니다. 그리고 $\sigma_i$의 역할에 대해 생각해보면, $\sigma_i$가 커질수록, 분자인 유클리디언 거리, 다시 말해 객체 간의 거리가 무의미해짐을 알 수 있습니다. 다시 말해 확률분포 $P_i$가 고르게 되는 것이죠. 결론적으로 perplexity를 높게 잡으면 $\sigma_i$가 커지고, 낮게 잡으면 $\sigma_i$가 작아집니다. 굳이 이렇게 객체마다 perplexity를 정의해주는 것은 데이터 객체마다 그 주변의 밀도가 다른 점을 반영하여 확률을 완만하게 만들어주려는 의도로 볼 수 있습니다.
 
 이제 다시 cost function으로 돌아옵시다. 드디어, cost function 계산을 위한 준비가 끝났습니다. $x_i$는 데이터셋에서 주어지는 값임을 알고, $y_i$는 우리가 최적화 문제를 통해 찾아야 하는 값인 것도 알고 있죠. 그리고 이제 $\sigma_i$를 계산하기 위해 각 데이터 객체 $x_i$ 별로 perplexity를 정해줘야 할 것입니다. 그럼 이제 cost function을 minmize하는 $y_i$를 어떻게 찾아야 할까요? 논문의 저자들은 gradient descent 방법을 활용합니다. 때문에 $y_i$를 처음에 random하게(isotropic Gaussian 분포에서) generate 하고, 이를 gradient descent에 momentum term을 추가하여 update합니다. t-SNE 논문에서 제시한 gradient와 solution의 update 식은 아래와 같습니다. 아래 식에서 $Y_{(t)}$는 t시점의 solution 행렬이고, $\frac{\partial C}{\partial Y^{(t)}}$가 gradient이며, $\eta$는 학습률, $\alpha^{(t)}$는 momentum term입니다. 
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195265268-754e005b-f781-4151-ab6c-0c99e1777848.png" height="200px" width="600px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195265268-754e005b-f781-4151-ab6c-0c99e1777848.png" height="180px" width="600px"></p>
 
 그런데 조금 이상하지 않으신가요? 실제로 모멘텀 경사하강법의 solution update 식을 보면 $- \eta *$(gradient)로 되어있는데, 지금 논문에서의 식은 덧셈으로 연결되어있습니다. 제 생각에는, 실제로 이 cost function의 gradient를 구하는 과정을 보면 어차피 gradient를 빼줘야 함을 고려하여 gradient 식의 $(y_i-y_j)$ 부분이 원래는 $(y_j-y_i)$였는데 여기에 -를 곱한 것으로 보입니다. gradient를 구하는 자세한 과정은 여기서는 생략하겠습니다. 앞서 언급했던 강필성 교수님 [유튜브 강의](https://www.youtube.com/watch?v=ytRmxBvyGG0&list=PLetSlH8YjIfWMdw9AuLR5ybkVvGcoG2EW)에 과정이 나와있으니 참고하시면 좋을 것 같습니다. 
 
@@ -91,6 +91,6 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 t-SNE의 저자들은 SNE에 두 가지 아이디어를 추가합니다. 첫번째는 symmetric SNE이고 두번째는 t-distribution의 도입입니다. 각각 $P_i$와 $Q_i$에 영향을 미칩니다. 우선 symmetric SNE부터 살펴보겠습니다.
 #### symmetric SNE
 본래 SNE에서는 $p_{i|j}$와 $p_{j|i}$가 서로 다를 수 있습니다. 각 데이터 객체별로 perplexity가 정해지기 때문이죠. t-SNE의 저자들은 SNE의 계산에 비해 더 빠르게 계산이 가능하도록 하기 위해 데이터 객체 i, j에 대해 동일한, 다시말해 대칭적인 확률분포를 생각하였습니다. 논문에서 제시된 것은 두가지로, 아래와 같습니다. 
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195279421-87d362f4-235d-4b70-bf85-ea3a66b31ee5.png" height="300px" width="600px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195279421-87d362f4-235d-4b70-bf85-ea3a66b31ee5.png" height="250px" width="600px"></p>
 
 
