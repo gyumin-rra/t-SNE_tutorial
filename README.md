@@ -88,3 +88,5 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 여기까지 t-SNE를 위한 핵심아이디어를 제공한 SNE를 알아보았습니다. 이제, t-SNE에서는 이 아이디어를 어떻게 활용했는지 살펴보겠습니다.
 
 ### t-distribution Stochastic Neighbor Embedding(t-SNE)
+t-SNE의 저자들은 SNE에 두 가지 아이디어를 추가합니다. 첫번째는 symmetric SNE이고 두번째는 t-distribution의 도입입니다. 각각 $P_i$와 $Q_i$에 영향을 미칩니다. 우선 symmetric SNE부터 살펴보겠습니다.
+#### symmetric SNE
