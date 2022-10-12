@@ -85,3 +85,6 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 
 그런데 조금 이상하지 않으신가요? 실제로 모멘텀 경사하강법의 solution update 식을 보면 $- \eta *$(gradient)로 되어있는데, 지금 논문에서의 식은 덧셈으로 연결되어있습니다. 제 생각에는, 실제로 이 cost function의 gradient를 구하는 과정을 보면 어차피 gradient를 빼줘야 함을 고려하여 gradient 식의 $(y_i-y_j)$ 부분이 원래는 $(y_j-y_i)$였는데 여기에 -를 곱한 것으로 보입니다. gradient를 구하는 자세한 과정은 여기서는 생략하겠습니다. 앞서 언급했던 강필성 교수님 [유튜브 강의](https://www.youtube.com/watch?v=ytRmxBvyGG0&list=PLetSlH8YjIfWMdw9AuLR5ybkVvGcoG2EW)에 과정이 나와있으니 참고하시면 좋을 것 같습니다. 
 
+여기까지 t-SNE를 위한 핵심아이디어를 제공한 SNE를 알아보았습니다. 이제, t-SNE에서는 이 아이디어를 어떻게 활용했는지 살펴보겠습니다.
+
+### t-distribution Stochastic Neighbor Embedding(t-SNE)
