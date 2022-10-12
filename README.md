@@ -80,8 +80,8 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 
 어쨌든, 높은 perplexity를 정해주면 높은 entropy가 결정되고 이는 곧 $P_i$가 고른 것, 다시 말해 $x_i$로부터 거리가 먼 객체와 작은 객체간의 확률 차이가 작음을 의미함을 이해하셨을 것입니다. 이제 $p_{j|i}$에 들어간 $\sigma_i$에 대해서 생각해봅시다. 결국 perplexity가 정해지면 entropy가 정해지고, entropy가 정해지면 $p_{j|i}$가 정해져야 되기 때문에 결과적으로 $x_i$마다 $\sigma_i$가 정해집니다. 그리고 $\sigma_i$의 역할에 대해 생각해보면, $\sigma_i$가 커질수록, 분자인 유클리디언 거리, 다시 말해 객체 간의 거리가 무의미해짐을 알 수 있습니다. 다시 말해 확률분포 $P_i$가 고르게 되는 것이죠. 결론적으로 perplexity를 높게 잡으면 $\sigma_i$가 커지고, 낮게 잡으면 $\sigma_i$가 작아집니다. 굳이 이렇게 객체마다 perplexity를 정의해주는 이유를 생각해보자면, 데이터 객체마다 그 주변의 밀도가 다른 점을 반영하여 확률을 완만하게 만들어주고 싶기 때문일 것입니다. 
 
-이제 다시 cost function으로 돌아옵시다. 드디어, cost function 계산을 위한 준비가 끝났습니다. $x_i$는 데이터셋에서 주어지는 값임을 알고, $y_i$는 우리가 최적화 문제를 통해 찾아야 하는 값인 것도 알고 있죠. 그리고 이제 $\sigma_i$를 계산하기 위해 각 데이터 객체 $x_i$ 별로 perplexity를 정해줘야 할 것입니다. 그럼 이제 cost function을 minmize하는 $y_i$를 어떻게 찾아야 할까요? 논문의 저자들은 gradient descent 방법을 활용합니다. 때문에 $y_i$를 처음에 random하게(isotropic Gaussian 분포에서) generate 하고, 이를 gradient descent 방식 중 모멘텀 방식을 이용하여 update합니다. gradient update 식은 아래와 같습니다. 
+이제 다시 cost function으로 돌아옵시다. 드디어, cost function 계산을 위한 준비가 끝났습니다. $x_i$는 데이터셋에서 주어지는 값임을 알고, $y_i$는 우리가 최적화 문제를 통해 찾아야 하는 값인 것도 알고 있죠. 그리고 이제 $\sigma_i$를 계산하기 위해 각 데이터 객체 $x_i$ 별로 perplexity를 정해줘야 할 것입니다. 그럼 이제 cost function을 minmize하는 $y_i$를 어떻게 찾아야 할까요? 논문의 저자들은 gradient descent 방법을 활용합니다. 때문에 $y_i$를 처음에 random하게(isotropic Gaussian 분포에서) generate 하고, 이를 gradient descent 방식 중 모멘텀 방식을 이용하여 update합니다. t-SNE 논문에서 제시한 update 식은 아래와 같습니다. 
 <p align="center"><img src="https://user-images.githubusercontent.com/112034941/195260782-4445a327-624f-4a70-8b9b-f97f458819a3.png" height="100px" width="600px"></p>
 
-위 식에서 $Y_{(t)}$는 t시점의 solution 행렬이고, $\partial$
+위 식에서 $Y_{(t)}$는 t시점의 solution 행렬이고, $\frac{\partial C}{\partial Y_{(t)}}$가 gradient이며, $\eta$는 학습률, $\alpha^{(t)}$는 모멘텀입니다.  
 
