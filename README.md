@@ -91,6 +91,6 @@ SNE에서는 $p_{j|i}$의 전체적 분포와 $q_{j|i}$의 전체적 분포를 �
 t-SNE의 저자들은 SNE에 두 가지 아이디어를 추가합니다. 첫번째는 symmetric SNE이고 두번째는 t-distribution의 도입입니다. 각각 $P_i$와 $Q_i$에 영향을 미칩니다. 우선 symmetric SNE부터 살펴보겠습니다.
 #### symmetric SNE
 본래 SNE에서는 $p_{i|j}$와 $p_{j|i}$가 서로 다를 수 있습니다. 각 데이터 객체별로 perplexity가 정해지기 때문이죠. t-SNE의 저자들은 SNE의 계산에 비해 더 빠르게 계산이 가능하도록 하기 위해 데이터 객체 i, j에 대해 동일한, 다시말해 대칭적인 확률분포를 생각하였습니다. 논문에서 제시된 것은 두가지로, 아래와 같습니다. 
-<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195279421-87d362f4-235d-4b70-bf85-ea3a66b31ee5.png" height="250px" width="600px"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/112034941/195279421-87d362f4-235d-4b70-bf85-ea3a66b31ee5.png" height="200px" width="600px"></p>
 
 
