@@ -274,8 +274,8 @@ plt.figure(figsize=(20,20))
 plt.title('MNIST, raw_t-sne')
 plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
-![image](https://user-images.githubusercontent.com/112034941/195535357-d97d418a-c4c5-4570-98b2-1aadcd6b4efe.png)
-![image](https://user-images.githubusercontent.com/112034941/195535504-428bb369-2150-4a40-b872-e28f81ab665c.png)
+![image](https://user-images.githubusercontent.com/112034941/195559840-a7325dc1-685d-4e85-bf28-ba2ea44d1592.png)
+![image](https://user-images.githubusercontent.com/112034941/195559953-af2011ac-fbc8-49f4-969a-5064ec0191e6.png)
 
 
 결과를 보면, manifold 학습이 잘 되지 않았고 모든 MNIST trainset을 학습한 것이 아니라 일부만 학습한 것임에도 오랜 시간(약 247초)이 걸림을 알 수 있습니다. 같은 결과를 sklearn의 TSNE를 통해 구현한 결과는 아래와 같습니다. 
@@ -305,7 +305,7 @@ plt.figure(figsize=(20,20))
 plt.title('MNIST, sklearn_TSNE')
 plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
-![image](https://user-images.githubusercontent.com/112034941/195536193-eaf6defc-483a-419a-b8e1-3dedbe139158.png)
+![image](https://user-images.githubusercontent.com/112034941/195560135-053c61b8-72a9-4c6a-9666-fcd1e4865c5a.png)
 
 결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있습니다. 하이퍼 파라미터의 차이도 그 이유 중 하나겠지만, 그보다 중요한 것은 현재 구현된 t-SNE 코드는 실제 t-SNE논문의 'simple version of t-distributed Stochastic Neighbor Embedding'의 구현체라는 점입니다. 편의를 위해 이 t-SNE 구현체를 raw t-SNE라고 하면, 실제로 요즈음 쓰이는 t-SNE에는 raw t-SNE에 몇 가지 내용이 추가됩니다. 
 
