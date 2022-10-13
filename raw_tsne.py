@@ -7,7 +7,7 @@ def make_dist_matrix(X):# n by d의 np.ndarray dataset 가정
 
 def make_p_j_cond_i_mat(dist_matrix, sigma_vec):
     sqrd_sigma_vec = 2. * np.square(sigma_vec.reshape((-1, 1)))
-    tmp_matrix = dist_matrix / sqrd_sigma_vec
+    tmp_matrix = -dist_matrix / sqrd_sigma_vec
     exp_matrix = np.exp(tmp_matrix)
     np.fill_diagonal(exp_matrix, 0.) # p_i|i == 0
     exp_matrix = exp_matrix + 1e-10 # avoiding division by 0 
