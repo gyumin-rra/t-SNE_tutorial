@@ -255,15 +255,18 @@ def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum
 이를 이용하여 [MNIST](http://yann.lecun.com/exdb/mnist/)를 기반으로 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas(v1.19.2)와 matplotlib(v1.19.2)을 활용하였습니다.)
 ```python
 import gzip
+import numpy as np
+from raw_tsne import raw_TSNE
 with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f:
     x_train = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28*28)
 with gzip.open('train-labels-idx1-ubyte.gz', 'rb') as f:
     y_train = np.frombuffer(f.read(), np.uint8, offset=8)
-    
+
 X = x_train[0:1000]
 label = y_train[0:1000]
 
 tsne_data = raw_TSNE(X, 2, 40, 1000, 200, 0.5, 1013)
+
 import pandas as pd
 import matplotlib.pyplot as plt
 tsne_data = pd.DataFrame(tsne_data, columns=['z1', 'z2'])
@@ -278,18 +281,26 @@ plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 결과를 보면, manifold 학습이 잘 되지 않았고 모든 MNIST trainset을 학습한 것이 아니라 일부만 학습한 것임에도 오랜 시간(약 247초)이 걸림을 알 수 있습니다. 같은 결과를 sklearn의 TSNE를 통해 구현한 결과는 아래와 같습니다. 
 ```python
 import gzip
+import numpy as np
+from raw_tsne import raw_TSNE
 with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f:
     x_train = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28*28)
 with gzip.open('train-labels-idx1-ubyte.gz', 'rb') as f:
     y_train = np.frombuffer(f.read(), np.uint8, offset=8)
-    
+
 X = x_train[0:1000]
 label = y_train[0:1000]
 
 from sklearn.manifold import TSNE
-tsne = TSNE(n_components=2)
+import time
+import warnings 
+warnings.filterwarnings("ignore") # warning 무시
+tsne = TSNE(n_components=2, random_state = 1013)
+st = time.time()
 tsne_data = tsne.fit_transform(X)
+et = time.time()
 tsne_data = pd.DataFrame(tsne_data, columns=['z1', 'z2'])
+print(et-st)
 plt.figure(figsize=(20,20))
 plt.title('MNIST, sklearn_TSNE')
 plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
