@@ -120,7 +120,16 @@ symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집
 ## t-SNE Implementation
 t-SNE 알고리즘의 순서부터 생각해봅시다. 하이퍼 파라미터의 설정 이후에는 1) $p_{j|i}$를 계산(전체 객체 n개에 대해), 2) $p_{ij}$ 계산, 3) 초기해 설정, 4) gradient 계산, 5) solution update, 6) 이후 t번 4, 5) 반복의 순서로 이뤄져야 합니다. 하지만 실제로 이를 구현하기 위해서는 1)을 조금 더 깊게 파고 들어야합니다. 앞서 살펴본 t-SNE의 개념을 되짚어 보면, $p_{j|i}$를 계산하기 위해서는 각 객체 사이의 유클리드 거리 계산 및 perplexity에 따른 각 데이터 객체 별 $\sigma_i$를 도출하는 과정이 선행되어야 함을 알 수 있습니다. $\sigma_i$ 도출을 위해 흔히 사용하는 알고리즘은 binary search 입니다. 이진탐색의 개념을 자세히 짚고 넘어가지는 못하지만, 최대한 압축하여 설명하자면 여기서의 이진탐색은 0부터 최대 $\sigma_i$ 중간값의 $\sigma_i$를 구해 대입해본 후 원하는 perplexity 보다 낮으면 0과 현재 $\sigma_i$ 사이의 값을 넣어보고 높으면 현재 $\sigma_i$와 최대 $\sigma_i$ 사이의 값을 넣어보는 것을 반복하며 perplexity를 만족하는 $\sigma_i$를 찾는 식으로 찾아내는 것을 말합니다. 
 
-이를 위해 구현해주어야 할 함수와 이를 구현한 결과는 아래와 같습니다. numpy를 사용하였습니다.
+우선 실제 구현 및 실험에 앞서 필요한 모듈 등의 버젼은 아래와 같습니다.
+| env_name   | version |
+|------------|---------|
+| python     | 3.8.3   |
+| numpy      | 1.19.2  |
+| matplotlib | 3.5.2   |
+| pandas     | 1.4.3   |
+| sklearn    | 1.1.1   |
+
+구현해주어야 할 함수와 그를 구현한 결과는 아래와 같습니다.(numpy를 사용하였습니다.)
 1. euclidean distance matrix 반환: n by d 데이터셋의 n by n 거리 행렬을 반환하는 함수.
 ```python
 def make_dist_matrix(X):# n by d의 np.ndarray dataset 가정
@@ -227,8 +236,8 @@ def optimization(X, p_ij_mat, max_iter, learning_rate, momentum, target_dim, see
 ```
 10. t-SNE 함수: 원 논문에서의 TSNE 수도코드를 구현한 함수. time 모듈을 활용하여 시간을 측정하였습니다.
 ```python
-import time
 def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum, seed):
+    import time
     st = time.time()
     dist_matrix = make_dist_matrix(X)
     print('made dist matrix, ' + str(time.time()-st))
@@ -242,4 +251,47 @@ def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum
     return Y
 ```
 
-이를 이용하여 코드를 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas와 matplotlib을 활용하였습니다.)
+이를 이용하여 MNIST를 기반으로 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas(v1.19.2)와 matplotlib(v1.19.2)을 활용하였습니다.)
+```python
+import gzip
+with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f:
+    x_train = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28*28)
+with gzip.open('train-labels-idx1-ubyte.gz', 'rb') as f:
+    y_train = np.frombuffer(f.read(), np.uint8, offset=8)
+    
+X = x_train[0:1000]
+label = y_train[0:1000]
+
+tsne_data = raw_TSNE(X, 2, 40, 1000, 200, 0.5, 1013)
+import pandas as pd
+import matplotlib.pyplot as plt
+tsne_data = pd.DataFrame(tsne_data, columns=['z1', 'z2'])
+plt.figure(figsize=(20,20))
+plt.title('MNIST, raw_t-sne')
+plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
+```
+![image](https://user-images.githubusercontent.com/112034941/195535357-d97d418a-c4c5-4570-98b2-1aadcd6b4efe.png)
+![image](https://user-images.githubusercontent.com/112034941/195535504-428bb369-2150-4a40-b872-e28f81ab665c.png)
+
+
+결과를 보면, manifold 학습이 잘 되지 않았고 모든 MNIST trainset을 학습한 것이 아니라 일부만 학습한 것임에도 오랜 시간(약 247초)이 걸림을 알 수 있습니다. 같은 결과를 sklearn의 TSNE를 통해 구현한 결과는 아래와 같습니다. 
+```python
+import gzip
+with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f:
+    x_train = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28*28)
+with gzip.open('train-labels-idx1-ubyte.gz', 'rb') as f:
+    y_train = np.frombuffer(f.read(), np.uint8, offset=8)
+    
+X = x_train[0:1000]
+label = y_train[0:1000]
+
+from sklearn.manifold import TSNE
+tsne = TSNE(n_components=2)
+tsne_data = tsne.fit_transform(X)
+tsne_data = pd.DataFrame(tsne_data, columns=['z1', 'z2'])
+plt.figure(figsize=(20,20))
+plt.title('MNIST, sklearn_TSNE')
+plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
+```
+![image](https://user-images.githubusercontent.com/112034941/195536193-eaf6defc-483a-419a-b8e1-3dedbe139158.png)
+
