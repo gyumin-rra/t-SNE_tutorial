@@ -7,6 +7,7 @@ simple tutorial for t-SNE
 1. [Dimensionality Reduction Overview](#dimensionality-reduction-overview)
 2. [Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)](#concepts-of-t-distributed-stochastic-neighbor-embeddingt-sne)
 3. [t-SNE Implementation](#t-sne-implementation)
+4. [Conclusion](#conclusion)
 
 ---
 
