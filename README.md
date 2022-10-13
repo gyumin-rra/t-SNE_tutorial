@@ -142,7 +142,7 @@ def make_dist_matrix(X):# n by d의 np.ndarray dataset 가정
 ```python
 def make_p_j_cond_i_mat(dist_matrix, sigma_vec):
     sqrd_sigma_vec = 2. * np.square(sigma_vec.reshape((-1, 1)))
-    tmp_matrix = dist_matrix / sqrd_sigma_vec
+    tmp_matrix = -dist_matrix / sqrd_sigma_vec
     exp_matrix = np.exp(tmp_matrix)
     np.fill_diagonal(exp_matrix, 0.) # p_i|i == 0
     exp_matrix = exp_matrix + 1e-10 # avoiding division by 0 
@@ -274,8 +274,8 @@ plt.figure(figsize=(20,20))
 plt.title('MNIST, raw_t-sne')
 plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
-![image](https://user-images.githubusercontent.com/112034941/195559840-a7325dc1-685d-4e85-bf28-ba2ea44d1592.png)
-![image](https://user-images.githubusercontent.com/112034941/195559953-af2011ac-fbc8-49f4-969a-5064ec0191e6.png)
+![image](https://user-images.githubusercontent.com/112034941/195624702-1b39c3c0-e505-4303-8dc5-59abc4868272.png)
+![image](https://user-images.githubusercontent.com/112034941/195624783-1bca7146-7ece-49dd-8115-3965dd28a5ad.png)
 
 
 결과를 보면, manifold 학습이 잘 되지 않았고 모든 MNIST trainset을 학습한 것이 아니라 일부만 학습한 것임에도 오랜 시간(약 247초)이 걸림을 알 수 있습니다. 같은 결과를 sklearn의 TSNE를 통해 구현한 결과는 아래와 같습니다. 
