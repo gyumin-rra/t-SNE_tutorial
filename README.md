@@ -120,10 +120,126 @@ symmetric SNE에서 $q_{ij}$의 분포는 정규분포를 사용하여 얻어집
 ## t-SNE Implementation
 t-SNE 알고리즘의 순서부터 생각해봅시다. 하이퍼 파라미터의 설정 이후에는 1) $p_{j|i}$를 계산(전체 객체 n개에 대해), 2) $p_{ij}$ 계산, 3) 초기해 설정, 4) gradient 계산, 5) solution update, 6) 이후 t번 4, 5) 반복의 순서로 이뤄져야 합니다. 하지만 실제로 이를 구현하기 위해서는 1)을 조금 더 깊게 파고 들어야합니다. 앞서 살펴본 t-SNE의 개념을 되짚어 보면, $p_{j|i}$를 계산하기 위해서는 각 객체 사이의 유클리드 거리 계산 및 perplexity에 따른 각 데이터 객체 별 $\sigma_i$를 도출하는 과정이 선행되어야 함을 알 수 있습니다. $\sigma_i$ 도출을 위해 흔히 사용하는 알고리즘은 binary search 입니다. 이진탐색의 개념을 자세히 짚고 넘어가지는 못하지만, 최대한 압축하여 설명하자면 여기서의 이진탐색은 0부터 최대 $\sigma_i$ 중간값의 $\sigma_i$를 구해 대입해본 후 원하는 perplexity 보다 낮으면 0과 현재 $\sigma_i$ 사이의 값을 넣어보고 높으면 현재 $\sigma_i$와 최대 $\sigma_i$ 사이의 값을 넣어보는 것을 반복하며 perplexity를 만족하는 $\sigma_i$를 찾는 식으로 찾아내는 것을 말합니다. 
 
-위 과정을 생각했을 때, 구현해주어야 할 함수는 다음과 같이 정할 수 있습니다.
-1. euclidean distance matrix 반환
+이를 위해 구현해주어야 할 함수와 이를 구현한 결과는 아래와 같습니다. numpy를 사용하였습니다.
+1. euclidean distance matrix 반환: n by d 데이터셋의 n by n 거리 행렬을 반환하는 함수.
+```python
+def make_dist_matrix(X):# n by d의 np.ndarray dataset 가정
+    sum_sqr_X = np.sum(np.square(X), axis = 1)# 1 by n의 객체 element 제곱의 합 matrix
+    dist_matrix = np.add(np.add(sum_sqr_X, -2*np.dot(X, X.T)).T, sum_sqr_X)# 1 diag(X X^T)^T -2 * X X^T + 1^T diag(X X^T)
+    return dist_matrix
+```
+2. $p_{j|i}$ matrix 반환: distance matrix와 객체 별 sigma vector를 input으로 받아 i행 j열 원소에 $p_{j|i}$를 가지는 matrix 반환하는 함수
+```python
+def make_p_j_cond_i_mat(dist_matrix, sigma_vec):
+    sqrd_sigma_vec = 2. * np.square(sigma_vec.reshape((-1, 1)))
+    tmp_matrix = dist_matrix / sqrd_sigma_vec
+    exp_matrix = np.exp(tmp_matrix)
+    np.fill_diagonal(exp_matrix, 0.) # p_i|i == 0
+    exp_matrix = exp_matrix + 1e-10 # avoiding division by 0 
+  
+    return exp_matrix / exp_matrix.sum(axis=1).reshape([-1, 1])
+```
+3. $p_{ij}$ matrix 반환: $p_{j|i}$ matrix를 받아 $p_{ij}$ matrix를 반환하는 함수 
+```python
+def make_p_ij_mat(p_j_cond_i_mat):
+    return (p_j_cond_i_mat + p_j_cond_i_mat.T) / (2. * p_j_cond_i_mat.shape[0])
+```
+4. $q_{ij}$ matrix 반환: 축소된 공간에서의 데이터셋 n by d'를 받아 $q_{ij}$ matrix와 그래디언트 계산을 위한 $1+|y_i-y_j|^2$행렬을 반환하는 함수
+```python
+def make_q_ij_mat(Y):
+    dist_matrix = make_dist_matrix(Y)
+    invrs_dist_mat = np.power(1. + dist_matrix, -1)
+    np.fill_diagonal(invrs_dist_mat, 0.) # q_ii == 0
+    
+    return invrs_dist_mat / np.sum(invrs_dist_mat), invrs_dist_mat# for gradient
+```
+5. binary search: 이진탐색 구현
+```python
+def binary_search(func, target, lower_bound=1e-20, upper_bound=1000., tolerance=1e-10, max_iter=5000):
+    for i in range(max_iter):
+        guess = (lower_bound+upper_bound)/2
+        guess = func(guess) # function will be perplexity calculator from sigma
+        if np.abs(guess - target) <= tolerance:
+            break
+        
+        if guess > target:
+            upper_bound = guess
+        else:
+            lower_bound = guess
+    
+    return guess
+```
+6. perplexity vector 반환: 거리행렬과 sigma vector를 input으로 하여 각 객체들의 현재 perplexity를 원소로하는 벡터를 반환하는 함수
+```python
+def make_perp_vec(dist_matrix, sigma_vec):
+    p_j_cond_i_mat = make_p_j_cond_i_mat(dist_matrix, sigma_vec)
+    entropy = -np.sum(p_j_cond_i_mat * np.log2(p_j_cond_i_mat), 1)# j에 대해 모두 더함.
+    perp_vec = 2 ** entropy# 1 by n perplexity 벡터 
+    return perp_vec
+```
+7. sigma vercotr 반환: 5, 6을 이용하여 설정한 perplexity를 만족하는 sigma를 찾는 함수
+```python
+def make_sigma_vec(dist_matrix, target_perplexity, make_perp_vec):
+    sigma_vec = [] 
+    for i in range(dist_matrix.shape[0]):
+        func = lambda sigma: \
+            make_perp_vec(dist_matrix[i:i+1, :], np.array(sigma)) # 객체 i에 대한 perplexity 계산
+        
+        correct_sigma = binary_search(func, target_perplexity)
+        
+        sigma_vec.append(correct_sigma)
+    # 1 by n sigma_vec 반환
+    return np.array(sigma_vec)
+```
+8. gradient matrix 반환: solution을 update하기 위한 gradient를 update하는 함수
+```python
+def make_grad_matrix(p_ij_mat, q_ij_mat, Y, invrs_dist_mat):
+    pq_diff_mat = p_ij_mat - q_ij_mat
+    pq_expanded = np.expand_dims(pq_diff_mat, 2)
+    y_diffs = np.expand_dims(Y, 1) - np.expand_dims(Y, 0)
+    distances_expanded = np.expand_dims(invrs_dist_mat, 2)
 
-하나하나 살펴봅시다. 
+    grad_matrix = 4. * (pq_expanded * y_diffs * distances_expanded).sum(1)
+    return grad_matrix
+```
+9. optimization: 초기화 후 momentum을 이용한 최적화를 하는 함수
+```python
+def optimization(X, p_ij_mat, max_iter, learning_rate, momentum, target_dim, seed):
+    # initialization
+    Y = np.random.default_rng(seed=1).normal(0.0, scale = 0.0001, size = [X.shape[0], target_dim])
+    Y_t = Y.copy()# momentum
+    Y_t_1 = Y.copy()# momentum
 
+    # gradient descent
+    for i in range(max_iter):
+        # q_ij 구하기
+        q_ij_mat, invrs_dist_mat = make_q_ij_mat(Y)
+        # gradient 구하기
+        grad_matrix = make_grad_matrix(p_ij_mat, q_ij_mat, Y, invrs_dist_mat)
+
+        # solution update
+        Y = Y - learning_rate*grad_matrix + momentum*(Y_t - Y_t_1)
+        # momentum update
+        Y_t_1 = Y_t.copy()
+        Y_t = Y.copy()
+            
+    return Y
+```
+10. t-SNE 함수: 원 논문에서의 TSNE 수도코드를 구현한 함수. time 모듈을 활용하여 시간을 측정하였습니다.
+```python
+import time
+def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum, seed):
+    st = time.time()
+    dist_matrix = make_dist_matrix(X)
+    print('made dist matrix, ' + str(time.time()-st))
+    sigma_vec = make_sigma_vec(dist_matrix, target_perplexity, make_perp_vec)
+    print('made sigma vector, ' + str(time.time()-st))
+    p_ij_mat = make_p_ij_mat(make_p_j_cond_i_mat(dist_matrix, sigma_vec))
+    print('made p_ij_mat, ' + str(time.time()-st))
+    Y = optimization(X, p_ij_mat, max_iter, learning_rate, momentum, target_dim, seed)
+    print('done, ' + str(time.time()-st))
+    
+    return Y
+```
 
 
