@@ -251,7 +251,7 @@ def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum
     return Y
 ```
 
-이를 이용하여 MNIST를 기반으로 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas(v1.19.2)와 matplotlib(v1.19.2)을 활용하였습니다.)
+이를 이용하여 [MNIST](http://yann.lecun.com/exdb/mnist/)를 기반으로 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas(v1.19.2)와 matplotlib(v1.19.2)을 활용하였습니다.)
 ```python
 import gzip
 with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f:
@@ -295,9 +295,18 @@ plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
 ![image](https://user-images.githubusercontent.com/112034941/195536193-eaf6defc-483a-419a-b8e1-3dedbe139158.png)
 
-결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있습니다. 하이퍼 파라미터의 차이도 그 이유 중 하나겠지만, 그보다 중요한 것은 현재 구현된 t-SNE 코드는 실제 t-SNE논문의 'simple version of t-distributed Stochastic Neighbor Embedding'의 구현체라는 점입니다. 편의를 위해 이 t-SNE 구현체를 raw t-SNE라고 하면, 실제로 요즈음 쓰이는 t-SNE에는 raw t-SNE에 비해 몇 가지 내용이 추가됩니다. 
+결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있습니다. 하이퍼 파라미터의 차이도 그 이유 중 하나겠지만, 그보다 중요한 것은 현재 구현된 t-SNE 코드는 실제 t-SNE논문의 'simple version of t-distributed Stochastic Neighbor Embedding'의 구현체라는 점입니다. 편의를 위해 이 t-SNE 구현체를 raw t-SNE라고 하면, 실제로 요즈음 쓰이는 t-SNE에는 raw t-SNE에 몇 가지 내용이 추가됩니다. 
 
-1. Ealry Exaggeration
-dddd
-2. 
+1. Ealry Exaggeration: 조금 더 빠른 해의 수렴을 위해 $p_{ij}$ 행렬에 특정 수를 곱하고, 일정 iteration을 넘어가면 다시 원래 행렬로 변환하여 gradient를 계산합니다.
+2. [Barnes-hut SNE](https://arxiv.org/pdf/1301.3342.pdf): metric trees 및 barnes-hut algorithm을 $p_{ij}$ 행렬을 근사하고 그래디언트도 근사하여 계산복잡도를 줄입니다. 본래 계산복잡도는 $O(N^2)$이지만, 이 방법론에서의 해당 과정의 계산복잡도는 $O(NlogN)$이라고 합니다.
+3. Numerical Stability: $p_{ij}$ 행렬과 $q_{ij}$ 행렬에서 너무 값이 작아지는 것을 방지하고자 1e-12(다른 값도 가능합니다.) 보다 낮은 값이 들어있는 경우 이를 1e-12로 대체합니다. 
+4. Using PCA: PCA를 통해 먼저 차원을 축소한 후 이를 가지고 t-SNE를 사용합니다. 
+5. 기타: 파이썬이 아니라 실제로는 c기반으로 계산한 후 이를 파이썬으로 wrapping하여 계산 속도 자체롤 높입니다.
+
+위와 같은 요소가 최근 사용되는 t-SNE 구현체와 이 repository에서의 구현체와의 차이점입니다. 여기에 적절한 하이퍼파라미터의 설정 또한 성능을 높이기 위해 필요한 점입니다. 
+
+---
+
+## Conclusion
+지금까지 t-SNE의 개념, 구현, 기존 모듈과의 비교 등을 진행해보았습니다. t-SNE의 이론적 배경부터 가장 기본적인 형태의 코드 구현까지 이어지는 과정이 저에게는 쉽지 않았지만 t-SNE에 대한 이해가 높아지는 과정이었는데, 여기까지 읽으신 분들에게도 그랬으면 좋겠습니다. 혹여나 이 markdown에 구현된 raw t-SNE를 진행하고 싶으신 분들을 위해 raw_tsne.py 파일과 실습을 진행한 데이터셋은 올려두었습니다. 실험 결과의 경우에는 t-sne_tutorial.ipynb에 있으니 참고바랍니다. 감사합니다.
 
