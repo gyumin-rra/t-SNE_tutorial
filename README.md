@@ -7,7 +7,6 @@ simple tutorial for t-SNE
 1. [Dimensionality Reduction Overview](#dimensionality-reduction-overview)
 2. [Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)](#concepts-of-t-distributed-stochastic-neighbor-embeddingt-sne)
 3. [t-SNE Implementation](#t-sne-implementation)
-4. [Conclusion](#conclusion)
 
 ---
 
@@ -296,5 +295,9 @@ plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
 ![image](https://user-images.githubusercontent.com/112034941/195536193-eaf6defc-483a-419a-b8e1-3dedbe139158.png)
 
-결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있다. 이는 몇 가지 
+결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있습니다. 하이퍼 파라미터의 차이도 그 이유 중 하나겠지만, 그보다 중요한 것은 현재 구현된 t-SNE 코드는 실제 t-SNE논문의 'simple version of t-distributed Stochastic Neighbor Embedding'의 구현체라는 점입니다. 편의를 위해 이 t-SNE 구현체를 raw t-SNE라고 하면, 실제로 요즈음 쓰이는 t-SNE에는 raw t-SNE에 비해 몇 가지 내용이 추가됩니다. 
+
+1. Ealry Exaggeration
+dddd
+2. 
 
