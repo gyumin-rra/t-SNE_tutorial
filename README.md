@@ -7,6 +7,7 @@ simple tutorial for t-SNE
 1. [Dimensionality Reduction Overview](#dimensionality-reduction-overview)
 2. [Concepts of t-distributed Stochastic Neighbor Embedding(t-SNE)](#concepts-of-t-distributed-stochastic-neighbor-embeddingt-sne)
 3. [t-SNE Implementation](#t-sne-implementation)
+4. [Conclusion](#conclusion)
 
 ---
 
@@ -294,4 +295,6 @@ plt.title('MNIST, sklearn_TSNE')
 plt.scatter(tsne_data.z1, tsne_data.z2, c=label, alpha=0.7, cmap=plt.cm.tab10)
 ```
 ![image](https://user-images.githubusercontent.com/112034941/195536193-eaf6defc-483a-419a-b8e1-3dedbe139158.png)
+
+결과를 보면 실제 결과와 시간과 성능 면에서 심한 차이가 있음을 알 수 있다. 이는 몇 가지 
 
