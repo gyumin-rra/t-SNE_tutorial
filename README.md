@@ -242,4 +242,4 @@ def raw_TSNE(X, target_dim, target_perplexity, max_iter, learning_rate, momentum
     return Y
 ```
 
-
+이를 이용하여 코드를 실제로 tSNE를 진행한 결과는 아래와 같습니다.(pandas와 matplotlib을 활용하였습니다.)
